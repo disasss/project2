@@ -82,16 +82,5 @@ waitress-serve --host=0.0.0.0 --port=8000 college_site.wsgi:application
 http://192.168.1.98:8000
 ```
 
-## Публикация в GitHub
-
-```powershell
-git init
-git add .
-git commit -m "Django project deployment (Windows)"
-git branch -M main
-git remote add origin <url>
-git push -u origin main
-```
-
 ## Практический результат
-После выполнения указанных шагов проект готов к деплою на Windows-сервере и доступен по IP-адресу/домену (в зависимости от сетевой настройки и прокси-сервера).
+После выполнения указанных шагов проект готов к деплою на Windows-сервере и доступен по IP-адресу/домену.
