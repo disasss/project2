@@ -1,0 +1,87 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Список студентов</title>
+    <link rel="stylesheet" href="{% static 'students/styles.css' %}">
+</head>
+<body class="page-students">
+    <div class="top-menu">
+        {% if request.user.is_authenticated %}
+           <a class="top-greeting" href="{% url 'profile' %}"> Привет, {{ request.user.username }}!</a>
+            <a href="{% url 'register' %}">Выйти</a>
+        {% else %}
+            <a href="{% url 'login' %}">Войти</a>
+            <a href="{% url 'register' %}">Регистрация</a>
+        {% endif %}
+    </div>
+    <div class="page-header">
+        <h1>Список студентов</h1>
+        {% if can_manage_students %}
+            <p class="page-subtitle">Управляй студентами, группами, клубами и аватарами в одном удобном интерфейсе.</p>
+        {% else %}
+            <p class="page-subtitle">Просмотр списка. Добавлять и изменять данные могут только администраторы сайта.</p>
+        {% endif %}
+    </div>
+    <div class="container{% if not can_manage_students %} container-readonly{% endif %}">
+        {% if can_manage_students %}
+        <div class="form-card">
+            <div class="editor-title">
+                {% if edit_student %}Редактировать студента{% else %}Добавить студента{% endif %}
+            </div>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                {% if edit_student %}
+                    <input type="hidden" name="student_id" value="{{ edit_student.id }}">
+                {% endif %}
+                {% if edit_student and edit_student.avatar %}
+                    <div class="avatar-preview">
+                        <label>Текущий аватар:</label>
+                        <img src="{{ edit_student.avatar.url }}" alt="{{ edit_student }}" class="current-avatar">
+                    </div>
+                {% endif %}
+                {{ form.non_field_errors }}
+                {{ form.as_p }}
+                <button type="submit">Сохранить</button>
+            </form>
+        </div>
+        {% endif %}
+
+        <div class="students-card">
+            <ul class="students-list">
+                {% for student in students %}
+                    <li>
+                        <div class="student-card">
+                            <div class="avatar">
+                                {% if student.avatar %}
+                                    <img src="{{ student.avatar.url }}" alt="{{ student }}">
+                                {% else %}
+                                    <div class="avatar-fallback">{{ student.first_name|slice:":1" }}{{ student.last_name|slice:":1" }}</div>
+                                {% endif %}
+                            </div>
+                            <div class="student-info">
+                                <strong>{{ student.first_name }} {{ student.last_name }}</strong>
+                                <div>Группа: {% if student.group %}{{ student.group.name }}{% else %}Не выбрана{% endif %}</div>
+                                <div>Возраст: {{ student.age }}</div>
+                                <div>Клубы: {% if student.clubs.exists %}{% for club in student.clubs.all %}{{ club.name }}{% if not forloop.last %}, {% endif %}{% endfor %}{% else %}Нет{% endif %}</div>
+                            </div>
+                            {% if can_manage_students %}
+                            <div class="student-actions">
+                                <a href="{% url 'edit_student' student.id %}">Редактировать</a>
+                                <form method="POST" action="{% url 'delete_student' student.id %}" class="delete-form">
+                                    {% csrf_token %}
+                                    <button type="submit" class="delete-button">Удалить</button>
+                                </form>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </li>
+                {% empty %}
+                    <li>{% if can_manage_students %}Нет студентов. Заполните форму слева, чтобы добавить.{% else %}Нет студентов.{% endif %}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

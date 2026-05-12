@@ -1,0 +1,32 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Профиль</title>
+    <link rel="stylesheet" href="{% static 'students/styles.css' %}">
+</head>
+<body class="page-auth">
+
+<div class="card auth-card">
+
+    <div class="auth-header">
+        <h2>Профиль</h2>
+        <p class="auth-subtitle">Информация о вашем аккаунте</p>
+    </div>
+
+    <div class="auth-form">
+        <p><strong>Имя пользователя:</strong> {{ user.username }}</p>
+        <p><strong>Email:</strong> {{ user.email }}</p>
+    </div>
+
+    <div class="auth-footer">
+        <a href="{% url 'student_list' %}">← Назад</a>
+        <br><br>
+        <a href="{% url 'logout' %}">Выйти</a>
+    </div>
+
+</div>
+
+</body>
+</html>
